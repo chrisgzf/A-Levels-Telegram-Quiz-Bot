@@ -3,12 +3,15 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.logging.BotLogger;
 
 /**
  * Created by chris on 1/9/16.
  */
 public class QuizHandler extends TelegramLongPollingBot {
+    public static final String LOGTAG = "[QuizHandler]";
 
+    @Override
     public String getBotUsername() {
         return BotConfig.BOT_USERNAME;
     }
@@ -18,6 +21,7 @@ public class QuizHandler extends TelegramLongPollingBot {
         return BotConfig.BOT_TOKEN;
     }
 
+    @Override
     public void onUpdateReceived(Update update) {
         //check if the update has a message
         if(update.hasMessage()){
@@ -25,15 +29,29 @@ public class QuizHandler extends TelegramLongPollingBot {
 
             //check if the message has text. it could also contain for example a location ( message.hasLocation() )
             if(message.hasText()){
-                //create an object that contains the information to send back the message
-                SendMessage sendMessageRequest = new SendMessage();
-                sendMessageRequest.setChatId(message.getChatId().toString()); //who should get from the message the sender that sent it.
-                sendMessageRequest.setText("you said: " + message.getText());
-                try {
-                    sendMessage(sendMessageRequest); //at the end, so some magic and send the message ;)
-                } catch (TelegramApiException e) {
-                    //do some error handling
-                }
+                handleMessage(message);
+            }
+        }
+    }
+
+    private void handleMessage(Message message) {
+        SendMessage reply = new SendMessage();
+        BotLogger.info(LOGTAG, message.getFrom().getFirstName() + " " + message.getFrom().getLastName() + ": " + message.getText());
+
+        if (message.getText().toLowerCase().equals("/start") || message.getText().toLowerCase().startsWith("/help")) {
+            reply.setText(BotMessages.StartMessage);
+        }
+
+        if (message.getText().toLowerCase().startsWith("/about")) {
+            reply.setText(BotMessages.AboutMessage);
+        }
+
+        if (reply.getText() != null) {
+            reply.setChatId(message.getChatId().toString());
+            try {
+                sendMessage(reply); //at the end, so some magic and send the message ;)
+            } catch (TelegramApiException e) {
+                //do some error handling
             }
         }
     }
