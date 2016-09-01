@@ -11,5 +11,4 @@ public class BotMessages {
     public static final String AboutMessage = "This bot is created by a Year 6 student to help people revise their definitions.\n\n" +
             "If you would like to contribute to the development of this bot, please do visit https://github.com/chrisgzf/A-Levels-Telegram-Quiz-Bot\n" +
             "For any issues or feature requests, please visit the link above to submit them too.";
-    
 }
